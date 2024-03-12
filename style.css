@@ -1,0 +1,42 @@
+*{
+    margin: 0;
+    padding: 0;
+    font-family: "Outfit", sans-serif;
+}
+nav {
+	float: right;
+}	
+li {
+	display: inline-block;
+	line-height: 100px;
+}			
+a{
+    font-size: 30px;
+    color: black;
+	display: block;
+	padding: 0 50px;
+	text-decoration: none;
+}
+			
+a:hover {
+	color: rgb(10, 190, 10);
+    transition-duration: 1s;
+}
+
+.logo{
+    padding: 5px;
+}
+.imagen1{
+    position: absolute;
+    z-index: 2;
+    height: 200px;
+    margin-left: 35%;
+    margin-top: 10%;
+}
+.imagen2{
+    position: absolute;
+    z-index: 3;
+    height: 300px;
+    margin-left: 35%;
+    margin-top: 30%;
+}

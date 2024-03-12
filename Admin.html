@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seccion administrador</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="usuario.css">
+</head>
+<body>
+    <h1 id="nusuario">Bienvenido, <span id="nombreUsuario">!</span></h1>
+    <br>
+
+    <button id="usuarios_reg">Usuarios registrados</button>
+
+    <div id="contenedor_usuario" style="display: none;">
+    
+        <ul id="lista_usuario">
+
+        </ul>
+            <button id="Elimusu">Eliminar</button>
+
+            <button id="Editausu">Añadir Manzana</button>
+            <div id="contenedor_editarm" style="display: none;">
+                <p>Nombre Barrio</p>
+                <input type="text" id="Nombre" name="Nombre">
+                <br>
+                <p>Direccion</p>
+                <input type="text" id="Dir" name="Dir">
+                <br>
+                <button id="Actualizamanzana">Actualizar</button>
+                <br>
+                <p>Manzanas registradas </p>
+                <ul id="lista_manzana">
+                    
+                </ul>
+                
+            </div>
+    
+    </div> 
+    <script>
+        document.addEventListener('DOMContentLoaded',()=>{
+            const xhrUsuario=new XMLHttpRequest();
+            xhrUsuario.open('POST','/obtener-usuario',true);
+            xhrUsuario.onreadystatechange=function(){
+                if(xhrUsuario.readyState===4){
+                    if(xhrUsuario.status===200){
+                        const usuario=JSON.parse(xhrUsuario.responseText);
+                        document.getElementById("nombreUsuario").textContent=usuario.Nombre;
+                    }
+                    else{
+                        console.error("Error al obtener el usuario");
+                    }
+                }
+            };
+            xhrUsuario.send();
+        //Mostrar usuarios
+                const usuarios_reg=document.getElementById("usuarios_reg");
+                const contenedor_usuario= document.getElementById('contenedor_usuario');
+                const formularioUsuario= document.getElementById('formularioUsuario');
+
+                const lista_usuario=document.getElementById('lista_usuario');
+
+                const Elimusu=document.getElementById('Elimusu');
+                const Editausu=document.getElementById('Editausu');
+
+                const contenedor_editarm=document.getElementById('contenedor_editarm')
+                const lista_manzana=document.getElementById('lista_manzana')
+ 
+                const Nombre=document.getElementById('Nombre')
+                const Dir=document.getElementById('Dir')
+                const Actualizamanzana=document.getElementById('Actualizamanzana')
+
+                usuarios_reg.addEventListener('click',()=>{
+                    const xhrUsuariosReg= new  XMLHttpRequest();
+                    xhrUsuariosReg.open('POST','/mostrar-usuarios',true);
+                    xhrUsuariosReg.setRequestHeader('Content-Type','application/json');
+                    xhrUsuariosReg.onreadystatechange=function(){
+                        if (xhrUsuariosReg.readyState==4){
+                            if(xhrUsuariosReg.status===200){
+                                const data=JSON.parse(xhrUsuariosReg.responseText);
+                                lista_usuario.innerHTML=data.usuariosGuardados.map(usuarios=>`
+                                <li><input type="checkbox" name="usuario" value="${usuarios}">
+                                ${usuarios[0]}
+                                ${usuarios[1]}
+                                ${usuarios[2]}
+                                ${usuarios[3]}
+                                ${usuarios[4]}</li>
+                                `).join('');
+                                contenedor_usuario.style.display='block';
+                            }
+                            else{
+                                console.error('Error al obtener usuarios')
+                            }
+                        }
+                    };
+                    xhrUsuariosReg.send();
+                })
+        //Eliminar usuario
+        Elimusu.addEventListener('click',async(event)=>{
+                    event.preventDefault();
+                    const usuariosGuardados= Array.from(lista_usuario.querySelectorAll('li input[type="checkbox"]'))
+                    .filter(checkbox=>checkbox.checked)
+                    .map(checkbox=>checkbox.value);
+                    console.log(usuariosGuardados)
+                    const xhrEliminaUsuario= new  XMLHttpRequest();
+                    xhrEliminaUsuario.open('POST','/eliminar-usuario',true);
+                    xhrEliminaUsuario.setRequestHeader('Content-Type','application/json');
+                    xhrEliminaUsuario.onreadystatechange=function(){
+                        if (xhrEliminaUsuario.readyState===4){
+                            if(xhrEliminaUsuario.status===200){
+                                alert("Usuario eliminado");
+                                window.location.reload();
+                            }
+                            else{
+                                console.error('Error al eliminar usuario');
+                            }
+                        }
+                    };
+                    xhrEliminaUsuario.send(JSON.stringify({usuario: usuariosGuardados}));
+                });
+
+            //Editar usuario
+            Editausu.addEventListener('click',()=>{
+                    const xhrmanzanaedit= new  XMLHttpRequest();
+                    xhrmanzanaedit.open('POST','/editar-manzanas',true);
+                    xhrmanzanaedit.setRequestHeader('Content-Type','application/json');
+                    xhrmanzanaedit.onreadystatechange=function(){
+                        if (xhrmanzanaedit.readyState==4){
+                            if(xhrmanzanaedit.status===200){
+                                const data=JSON.parse(xhrmanzanaedit.responseText);
+                                lista_manzana.innerHTML=data.manzanasguardadas.map(planteles=>`
+                                
+                                <li>
+                                ${planteles[0]}
+                                ${planteles[1]}
+                                ${planteles[2]}
+                                </li>
+                                
+                                `).join('');
+                                contenedor_editarm.style.display='block';
+                            }
+                            else{
+                                console.error('Error al obtener usuarios')
+                            }
+                        }
+                    };
+                    xhrmanzanaedit.send();
+                })
+
+            
+            //Evento para enviar los servicios seleccionados al servidor
+            Actualizamanzana.addEventListener('click',async(event)=>{
+            event.preventDefault();
+            //Obtener los servicios seleccionados desde el formulario
+            const Dir=contenedor_editarm.elements['Dir'].value;
+            const Nombre=contenedor_editarm.elements['Nombre'].value;
+            //Realizar una solicitud al servidor para guardar los servicios seleccionados 
+            const xhractualizarmanzana=new XMLHttpRequest();
+            xhractualizarmanzana.open('POST','/guardar-manzana-editada',true);
+            xhractualizarmanzana.setRequestHeader('Content-Type','application/json');
+            xhractualizarmanzana.onreadystatechange=function(){
+                if(xhractualizarmanzana.readyState===4){
+                    if(xhractualizarmanzana.status===200){
+                        alert("Manzana agregada");
+                        window.location.reload();
+                    }else{
+                        console.error('Error al guardar servicios del usuario');
+                    }
+                }
+            };
+            xhractualizarmanzana.send(JSON.stringify({
+                plantel:manzanaeditada,
+                Dir:Dir,
+                Nombre:Nombre
+            }));
+        });
+
+
+                
+            })
+    </script>
+
+    <!-- <br>
+    <button id="s_selec"></button>
+    <div id="contenedor_selec" style="display: none;">
+    <form id="lista-solicitud">
+        <ul id="lista-solicitudes"> </ul>
+        <button type="submit">Eliminar solicitud</button>
+    </form>
+    </div>
+    <br>
+
+    <div>
+    <button>Cerrar sesión</button>
+    </div> -->
+    
+</body>
+</html>

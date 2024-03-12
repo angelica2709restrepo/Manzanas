@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bienvenida</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="usuario.css">
+</head>
+<body>
+    <h1 id="nusuario">Bienvenid@,<span id="nombreUsuario">!</span>:)</h1>
+    <h1 id="nanzana">Tu manzana está ubicada en<span id="manzanaUsuario">!</span></h1>
+
+    <button id="btnDesplegarServicios">Mostrar servicios</button>
+    <div id="servicios-container" style="display: none;">
+        <form id="formularioSeleccionServicio">
+            <h2>Servicios del usuario</h2>
+            <table id="tabla-servicios">
+                <thead>
+                    <th>Servicio</th>
+                    <th>Seleccionar</th>
+                </thead>
+                <tbody id="lista-servicios"></tbody>
+            </table>
+            <input type="datetime-local" id="fechaHora" name="fechaHora" required>
+            <button type="submit">Guardar servicios</button>
+        </form>
+    </div>
+    
+    <button id="btnDesplegarServiciosGuardados">Desplegar servicios guardados</button>
+    <div id="servicios-guardados-container" style="display: none;">
+        <form id="formSelecServicio">
+        <h2>Servicios guardados</h2>
+        <table id="tabla-servicios-guardados">
+            <thead>
+                <th>Servicio</th>
+                <th>Fecha</th>
+            </thead>
+            <tbody id="lista-servicios-guardados"></tbody>
+        </table>
+    </form>
+    </div>
+    <button id="btnCerrarSesion">Cerrar sesion</button>
+    <!-- <h1 id="nanzana">Tu manzana es</h1>
+    <br>
+
+    <button id="s_disponibles">Servicios disponibles</button>
+
+    <div id="contenedor_servicios" style="display: none;">
+    <form id="formularioSeleccionServicio">
+        <ul id="lista-servicios"></ul>
+        <input type="datetime-local" name="fechaHora" id="fechaHora">
+            <button type="submit">Guardar</button>
+    </form>
+    </div>
+    <br>
+
+    <br>
+    <button id="s_selec">Servicios seleccionados</button>
+    <div id="contenedor_selec" style="display: none;">
+    <form id="lista-solicitud">
+        <ul id="lista-solicitudes"> </ul>
+        <button type="submit">Eliminar solicitud</button>
+    </form>
+    </div>
+    <br>
+
+    <div>
+    <button>Cerrar sesión</button>
+    </div> -->
+
+    <script>
+    //Mostrar bienvenida con usuario y manzana seleccionada
+        document.addEventListener('DOMContentLoaded',()=>{
+            const xhrUsuario=new XMLHttpRequest();
+            xhrUsuario.open('POST','/obtener-usuario',true);
+            xhrUsuario.onreadystatechange=function(){
+                if(xhrUsuario.readyState===4){
+                    if(xhrUsuario.status===200){
+                        const usuario=JSON.parse(xhrUsuario.responseText);
+                        document.getElementById("nombreUsuario").textContent=usuario.Nombre;
+                        document.getElementById("manzanaUsuario").textContent=usuario.Manzana;
+                    }
+                    else{
+                        console.error("Error al obtener el usuario",error);
+                    }
+                }
+            };
+            xhrUsuario.send();
+        const serviciosContainer=document.getElementById("servicios-container");
+        const tablaServicios=document.getElementById("tabla-servicios");
+        const listaServicios=document.getElementById( "lista-servicios");
+        const btnDesplegarServicios=document.getElementById("btnDesplegarServicios");
+        //Evento al hacer click en el boton para desplegar servicios
+        btnDesplegarServicios.addEventListener('click',()=>{
+            const xhrobtener=new XMLHttpRequest();
+            xhrobtener.open('POST','/obtener-servicios-usuario',true);
+            xhrobtener.setRequestHeader('Content-Type','application/json');
+            xhrobtener.onreadystatechange=function(){
+                if(xhrobtener.readyState===4){
+                    if(xhrobtener.status===200){
+                        const data=JSON.parse(xhrobtener.responseText);
+                        //Mostrar los servicios en la tabla
+                        listaServicios.innerHTML=''; //Limpiar la tabla antes de llenarla
+                        data.servicios.forEach(servicio=>{
+                            const row=document.createElement('tr');
+                            row.innerHTML=`
+                            <td>${servicio}</td>
+                            <td><input type="checkbox" name="servicios" value="${servicio}"></td>
+                            `;
+                            listaServicios.appendChild(row);
+                    });
+                    serviciosContainer.style.display='block'; 
+                } else{
+                    console.error("Error al obtener los servicios del usuario: ");
+                }
+            }
+        };
+        xhrobtener.send();
+        //Evento para enviar los servicios seleccionados al servidor
+        const formularioSeleccionServicio=document.getElementById('formularioSeleccionServicio');
+        formularioSeleccionServicio.addEventListener('submit',async(event)=>{
+            event.preventDefault();
+            //Obtener los servicios seleccionados desde el formulario
+            const serviciosSeleccionados=Array.from(formularioSeleccionServicio.elements['servicios'])
+            .filter(checkbox=>checkbox.checked)
+            .map(checkbox=>checkbox.value);
+            //Obtener la fecha y hora
+            const fechaHora=formularioSeleccionServicio.elements['fechaHora'].value;
+            //Realizar una solicitud al servidor para guardar los servicios seleccionados 
+            const xhrGuardarServicios=new XMLHttpRequest();
+            xhrGuardarServicios.open('POST','/guardar-servicios-usuario',true);
+            xhrGuardarServicios.setRequestHeader('Content-Type','application/json');
+            xhrGuardarServicios.onreadystatechange=function(){
+                if(xhrGuardarServicios.readyState===4){
+                    if(xhrGuardarServicios.status===200){
+                        alert("Servicio guardado");
+                        window.location.reload();
+                    }else{
+                        console.error('Error al guardar servicios del usuario');
+                    }
+                }
+            };
+            xhrGuardarServicios.send(JSON.stringify({
+                servicios:serviciosSeleccionados,
+                fechaHora:fechaHora
+            }));
+        });
+        //Evento para enviar los servicios guardados
+        const btnDesplegarServiciosGuardados=document.getElementById('btnDesplegarServiciosGuardados');
+        const serviciosGuardadosContainer=document.getElementById('servicios-guardados-container');
+        const listaServiciosGuardados=document.getElementById('lista-servicios-guardados');
+        btnDesplegarServiciosGuardados.addEventListener('click',()=>{
+            //Realizar una solicitud para obtener servicios guardados
+            const xhrObtenerServiciosGuardados=new XMLHttpRequest();
+            xhrObtenerServiciosGuardados.open('POST','/obtener-servicios-guardados',true);
+            xhrObtenerServiciosGuardados.onreadystatechange=function(){
+                if(xhrObtenerServiciosGuardados.readyState===4){
+                    if(xhrObtenerServiciosGuardados.status===200){
+                        const data=JSON.parse(xhrObtenerServiciosGuardados.responseText);
+                        //Mostrar servicios guardados en la tabla
+                        listaServiciosGuardados.innerHTML=
+                        data.serviciosGuardados.map(servicio=>`
+                        <tr>
+                            <td>${servicio.Nombre}</td>
+                            <td>${servicio.Fecha}</td>
+                            <td><input type="checkbox" name="servicios" value="${servicio}"></td>
+                            <td><button type="submit">Eliminar</button></td>
+                        </tr>
+                        `).join('');
+                        serviciosGuardadosContainer.style.display='block';
+                    }else{
+                        console.error("Error al obtener servicios guardados")
+                    }
+                }
+            };
+            xhrObtenerServiciosGuardados.send();
+        });
+
+      //Eliminar servicios
+    
+        const formSelecServicio=document.getElementById('formSelecServicio');
+        formSelecServicio.addEventListener('submit',async(event)=>{
+            event.preventDefault();
+            const serviciosSeleccionados=Array.from(formSelecServicio.elements['servicios'])
+            .filter(checkbox=>checkbox.checked)
+            .map(checkbox=>checkbox.value);
+            const xhrEliminarServicio= new  XMLHttpRequest();
+            xhrEliminarServicio.open('POST','/eliminar-servicio',true);
+            xhrEliminarServicio.setRequestHeader('Content-Type','application/json');
+            xhrEliminarServicio.onreadystatechange=function(){
+                if (xhrEliminarServicio.readyState===4){
+                    if(xhrEliminarServicio.status===200){
+                        alert("Datos eliminados");
+                        window.location.reload();
+                    }
+                    else{
+                        console.error('Error al guardar servicios del usuario',error);
+                    }
+                }
+            };
+            xhrEliminarServicio.send(JSON.stringify({
+                servicios:serviciosSeleccionados
+            }));  
+        })
+ 
+        const btnCerrarSesion = document.getElementById('btnCerrarSesion');
+        btnCerrarSesion.addEventListener('click',()=>{
+            const xhrCerrarSesion = new XMLHttpRequest();
+            xhrCerrarSesion.open('POST','/cerrar-sesion',true);
+            xhrCerrarSesion.onreadystatechange=function(){
+                if(xhrCerrarSesion.readyState===4 && xhrCerrarSesion.status===200){
+                    alert("Sesión cerrada")
+                    window.location.href ='/index.html';
+                }
+                else{
+                    console.error('Error al cerrar sesion')
+                }
+            }
+            xhrCerrarSesion.send();
+        })
+        window.onload=function(){
+            window.history.forward();
+        };
+        window.onpageshow=function(eve){
+            if(eve.persisted){
+                window.location.reload();
+            }
+        }
+        })
+        /*const params=new URLSearchParams(window.location.search);
+        const usuario=params.get('usuario');
+        document.getElementById('nusuario').textContent=`Bienvenido: ${usuario}`;
+        const manzana=params.get('manzana');
+        document.getElementById('nanzana').textContent=`Tu manzana está ubicada en: ${manzana}`;
+    //Mostrar servicios
+            const contenedor_servicios= document.getElementById('contenedor_servicios');
+            const formularioSeleccionServicio= document.getElementById('formularioSeleccionServicio');
+            const s_disponibles=document.getElementById('s_disponibles');
+            const listaServicios=document.getElementById('lista-servicios');
+    //Hecho por nosottros "Mostrar servicios"
+            const s_selec=document.getElementById('s_selec');
+            const revision=document.getElementById('revision');
+            const contenedor_selec=document.getElementById('contenedor_selec');
+            const listasolicitud=document.getElementById('lista-solicitud');
+            const listasolicitudes=document.getElementById('lista-solicitudes');
+    //Solicitar servicios 
+            s_disponibles.addEventListener('click',()=>{
+                const xhr= new  XMLHttpRequest();
+                xhr.open('POST','/obtener-servicios-usuario',true);
+                xhr.setRequestHeader('Content-Type','application/json');
+                xhr.onreadystatechange=function(){
+                    if (xhr.readyState==4){
+                        if(xhr.status===200){
+                            const data=JSON.parse(xhr.responseText);
+                            listaServicios.innerHTML=data.servicios.map(servicio=>`
+                            <li><label><input type="checkbox" name="servicios" 
+                            value="${servicio}"> ${servicio}</label></li>
+                            `).join('');
+                            contenedor_servicios.style.display='block';
+                        }
+                        else{
+                            console.error('Error al obtener servicio')
+                        }
+                    }
+                };
+                xhr.send(JSON.stringify({usuario}));
+            })
+
+    //Guardar datos al insertar informacion
+            formularioSeleccionServicio.addEventListener('submit',async(event)=>{
+                event.preventDefault();
+                const servicioselec=Array.from(formularioSeleccionServicio.elements['servicios'])
+                .filter(checkbox=>checkbox.checked)
+                .map(checkbox=>checkbox.value);
+                const fechaHora=formularioSeleccionServicio.elements['fechaHora'].value;
+                const xhr= new  XMLHttpRequest();
+                xhr.open('POST','/guardar-servicios-usuario',true);
+                xhr.setRequestHeader('Content-Type','application/json');
+                xhr.onreadystatechange=function(){
+                    if (xhr.readyState===4){
+                        if(xhr.status===200){
+                            alert("Datos guardados");
+                        }
+                        else{
+                            console.error('Error al guardar servicios del usuario',error);
+                        }
+                    }
+                };
+                xhr.send(JSON.stringify({usuario,
+                    servicios:servicioselec,
+                    fechaHora:fechaHora
+                }));  
+            })
+
+    //Mostrar servicios segun manzana
+        s_selec.addEventListener('click',()=>{
+            const xhr= new  XMLHttpRequest();
+                xhr.open('POST','/mostrar-servicios-usuario',true);
+                xhr.setRequestHeader('Content-Type','application/json');
+                xhr.onreadystatechange=function(){
+                    if (xhr.readyState===4){
+                        if(xhr.status===200){
+                            const data=JSON.parse(xhr.responseText);
+                            listasolicitudes.innerHTML=data.solicitudes.map(solicitud=>`
+                            <li><label><input type="checkbox" name="solicitudes" value="${solicitud}">${solicitud[0]} - ${solicitud[1] }</label></li>
+                            `).join('');
+                            contenedor_selec.style.display='block';
+                        }
+                        else{
+                            console.error('Error al mostrar servicio')
+                        }
+                    }
+                };
+                xhr.send(JSON.stringify({usuario}));
+        })
+
+    //Eliminar datos al seleccionar
+        listasolicitud.addEventListener('submit',async(event)=>{
+            event.preventDefault();
+            const serviciosoli=Array.from(listasolicitud.querySelectorAll('li input[type="checkbox"]'))
+            .filter(checkbox=>checkbox.value)
+            .map(checkbox=>checkbox.value);
+            const xhr= new  XMLHttpRequest();
+            xhr.open('POST','/eliminar-servicios-usuario',true);
+            xhr.setRequestHeader('Content-Type','application/json');
+            xhr.onreadystatechange=function(){
+                if (xhr.readyState===4){
+                    if(xhr.status===200){
+                        alert("Datos eliminados");
+                    }
+                    else{
+                        console.error('Error al guardar servicios del usuario',error);
+                    }
+                }
+            };
+            xhr.send(JSON.stringify({usuario,
+                solicitudes:serviciosoli
+            }));  
+        })
+        */
+    })
+    </script>
+</body>
+</html>

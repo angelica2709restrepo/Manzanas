@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="inicio.css">
+</head>
+<body>
+    <form action="http://localhost:3000/crear" method="post">
+    <h1>Registre sus datos</h1>
+    <p>Nombre</p>
+    <input name="Nombre" type="text">
+    <p>Tipo de documento</p>
+    <select name="Tipo" id="" required>
+        <option value="">Selecciona</option>
+        <option value="CC">CC</option>
+        <option value="TI">TI</option>
+    </select>
+    <p>Documento</p>
+    <input name="Documento" type="number" minlength="10" maxlength="10" required>
+    <br>
+    <p>Selecciona manzana</p>
+    <select name="Manzana" id="">
+        <option value="">Selecciona</option>
+        <option value="Bosa">Bosa</option>
+        <option value="Suba">Suba</option>
+        <option value="Chapinero">Chapinero</option>
+    </select>
+    <br>
+    <button type="submit">Enviar</button>
+    <button><a href="./index.html">Atras</a></button>
+</form>
+</body>
+</html>

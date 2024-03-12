@@ -1,0 +1,24 @@
+
+*{
+    margin: 1%;
+ font-family: "Outfit", sans-serif; 
+ text-align: center;
+}
+body{
+    background-color: lavenderblush;
+}
+button{
+    background-color: rgb(159, 112, 246);
+    color: aliceblue;
+    border-radius: 50px;
+}
+input{
+    background-color: rgb(214, 253, 253);
+    border-radius: 50px;
+}
+ul{
+    list-style: none;
+}
+h1{
+    color: plum;
+}

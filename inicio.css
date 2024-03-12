@@ -1,0 +1,38 @@
+*{
+    text-align: center;
+    font-size: 20px;
+    font-family: "Outfit", sans-serif;
+}
+body{
+    background: url(logo.svg);
+      
+}
+a{
+    text-decoration: none;
+    color: black;
+}
+h1{
+    background-color: darkorchid;
+    margin-top: 20%;
+    margin-left: 25%;
+    margin-right: 25%;
+    align-items: center;
+    border-radius: 10px;
+    color: wheat;
+    font-size: 50px;
+}
+input, select{
+    width: 200px;
+    height: 40px;
+    border-radius: 15px;
+}
+button{
+    margin: 20px;
+    padding: 10px 20px;
+    background-color: lightcoral;
+    border-radius: 60px 0;
+}
+
+input:hover, select:hover{
+    background-color: lightsteelblue;
+}

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inicio sesión</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="inicio.css">
+</head>
+<body>
+    <form action="http://localhost:3000/iniciar" method="post">
+    <h1>Ingrese sus datos</h1>
+    <p>Tipo de documento</p>
+    <select id="" name="Tipo">
+        <option value="">Selecciona</option>
+        <option value="CC">CC</option>
+        <option value="TI">TI</option>
+    </select>
+    <br>
+    <p>Documento</p>
+    <input type="number" name="Documento">
+    <br>
+    <button type="submit">Iniciar sesión</button>
+    <button><a href="./index.html">Atrás</a></button>
+</form>
+</body>
+</html>
